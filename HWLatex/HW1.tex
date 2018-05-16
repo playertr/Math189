@@ -1,0 +1,274 @@
+\documentclass[12pt,letterpaper]{hmcpset}
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{amsthm}
+\usepackage{enumitem}
+\usepackage{amsmath}
+
+\input{macros.tex}
+
+% info for header block in upper right hand corner
+\name{Tim Player}
+\class{Math189R SU17}
+\assignment{Homework 1}
+\duedate{Tuesday, May 15, 2018}
+
+\renewcommand{\labelenumi}{{(\alph{enumi})}}
+
+
+\begin{document}
+
+\begin{problem}[1]
+(\textbf{Linear Transformation}) Let $\mathbf{y} = A\mathbf{x} + \mathbf{b}$ be a random vector.
+show that expectation is linear:
+\[
+    \EE[\yy] = \EE[A\xx + \bb] = A\EE[\xx] + \bb.
+\]
+Also show that
+\[
+    \cov[\yy] = \cov[A\xx + \bb] = A \cov[\xx] A^\T = A\Sigmab A^\T.
+\]
+\end{problem}
+\begin{solution}
+\begin{enumerate}
+
+\item
+In this solution, we assume $A$ and $\mathbf{b}$ are a constant matrix and vector, respectively, with all the randomness being introduced by $\mathbf{x}$.
+
+Then, let $A$ by a square $m \times m $ matrix with of the form
+
+\[
+A = \begin{bmatrix} 
+    a_{11} & \dots & a_{1m} \\
+    \vdots & \ddots & \\
+    a_{m1} &        & a_{mm} 
+    \end{bmatrix}
+\]
+
+and let $\mathbf{b}$ be an $m$-dimension column vector
+    
+   \[
+b=
+  \begin{bmatrix}
+    b_{1} \\
+    \vdots \\
+    b_{n} \\
+  \end{bmatrix}.
+\]
+
+We can assume without loss of generality that $\mathbf{y}$ is a discrete random variable such that
+ 
+\[
+\EE[\yy] = \frac{1}{n} \sum_{i=1}^{n} y_i .
+\]
+
+Then,
+\begin{align}
+\EE[\yy] &= \EE[A\xx + \bb]  \\
+&= \EE[A\xx]  + \EE[\bb] \\
+\intertext{since summations can be distributed to additive terms. Trivially, since, $\bb$ is a constant vector, $\EE[\bb] = \bb$ so}
+\EE[\yy] &= \EE[A\xx]  + \bb. \\
+\intertext{Then, the matrix multiplication may be distributed so that}
+\EE[\yy] &= \EE   \  
+	\begin{bmatrix}
+    		a_{11} \, x_1  + \dots + a_{1n} \, x_n  \\
+    		\vdots \\
+    		a_{m1} \, x_1  + \dots + a_{mn} \, x_n \\
+  	\end{bmatrix}
+	+ \bb. \\
+\intertext{Since the expected value of a vector is simply a vector of each component's expected value, then}
+\EE[\yy] &=  
+	\begin{bmatrix}
+    		\EE[a_{11} \, x_1  + \dots + a_{1n} \, x_n ] \\
+    		\vdots \\
+    		\EE[a_{m1} \, x_1  + \dots + a_{mn} \, x_n ] \\
+  	\end{bmatrix}
+	+ \bb. \\
+\intertext{Because the terms of $A$ are constant, they may be "pulled out" of the multiplication, leaving}
+\EE[\yy] &=  A \begin{bmatrix}
+    		\EE[x_1] \\
+    		\vdots \\
+    		\EE[x_n] \\
+  	\end{bmatrix}
+	+ \bb. \\
+&=A \EE[\xx] + \bb
+\end{align}
+as desired, showing that expectation is linear.
+
+\item
+We use the linear nature of expected value to prove that
+\[
+    \cov[\yy] = \cov[A\xx + \bb] = A \cov[\xx] A^\T = A\Sigmab A^\T.
+\]
+
+First, we preface that, from Wikipedia, the covariance of a matrix $\mathbf{X}$ is 
+\[
+\Sigmab = \EE[ (\mathbf{X} - \EE[\mathbf{X}])(\mathbf{X} - \EE[\mathbf{X}])^\T ].
+\]
+
+Thus, we may write
+\begin{align*}
+	\cov[\yy] &= \cov[A\xx + \bb] \\
+	&= \EE [ (A\xx + \bb - \EE[A\xx + \bb ])(A\xx + \bb  - \EE[A\xx + \bb )^\T ].
+\end{align*}
+We then apply expectation as a linear operator to state
+\begin{align*}
+	\cov[\yy] &= \EE [ (A\xx + \bb - \EE[A\xx]  - \EE[\bb ])(A\xx + \bb  - \EE[A\xx] - \EE[\bb] )^\T ]\\
+	&= \EE [ (A\xx + \bb - \EE[A\xx]  - \bb)(A\xx + \bb  - \EE[A\xx] - \bb )^\T ] \\
+	&= \EE [ (A\xx - \EE[A\xx] )(A\xx  - \EE[A\xx] )^\T ]\\
+	&= \EE [ (A\xx - A\EE[\xx] )(A\xx  - A\EE[\xx] )^\T ]\\
+	&= \EE [ (A (\xx - \EE[\xx]) )(A(\xx  - \EE[\xx]) )^\T ]\\
+\end{align*}
+
+Since in general, matrix multiplication transposes work so $(JK)^\T = K^\T J^\T$, we may write
+
+\begin{align*}
+	\cov[\yy] &= \EE [ A (\xx - \EE[\xx])(\xx  - \EE[\xx])^\T A^\T) ]\\
+\end{align*}
+
+And, by associativity and the definition of $\Sigmab$, 
+
+\begin{align*}
+	\cov[\yy] = A\Sigmab A^\T,
+\end{align*}
+as desired.
+
+\end{enumerate}
+    \vfill
+\end{solution}
+\newpage
+
+
+
+
+\begin{problem}[2]
+Given the dataset $\Dc = \{(x,y)\} = \{(0,1), (2,3), (3,6), (4,8)\}$
+\begin{enumerate}
+   \item Find the least squares estimate $y = \thetab^\T\xx$ by hand using
+        Cramer's Rule.
+    \item Use the normal equations to find the same solution and verify it
+        is the same as part (a).
+    \item Plot the data and the optimal linear fit you found.
+    \item Find randomly generate 100 points near the line with white Gaussian
+        noise and then compute the least squares estimate (using a computer).
+        Verify that this new line is close to the original and plot the new
+        dataset, the old line, and the new line.
+\end{enumerate}
+
+\end{problem}
+\begin{solution}
+\begin{enumerate}
+
+\item
+In lecture, we found using Cramer's rule that a set of data $\Dc = \{(x,y)\}$ can be fitted with a line of slope 
+\[
+m = \frac{ n \sum_{i=1}^n x_i y_i - (\sum_{i=1}^n x_i)(\sum_{i=1}^n y_i)}
+	{n \sum_{i=1}^n x_i^2 - (\sum_{i=1}^n x_i)^2}
+\]
+and y-intercept
+\[
+b = \frac{  (\sum_{i=1}^n x_i^2)(\sum_{i=1}^n y_i) - (\sum_{i=1}^n x_i)(\sum_{i=1}^n x_i y_i) }
+	{n \sum_{i=1}^n x_i^2 - (\sum_{i=1}^n x_i)^2}.
+\]
+Such a line will minimize the sum of the squared residuals.
+
+By hand, we thus first tally the relevant summations:
+\begin{align*}
+\sum_{i=1}^n x_i &=  0 + 2 + 3 + 4 &= 9\\
+\sum_{i=1}^n y_i &= 1 + 3 + 6 + 8 &= 18\\
+\sum_{i=1}^n x_i y_i &= 0 \times 1 + 2 \times 3  + 3 \times 6 + 4 \times 8 &= 56 \\
+\sum_{i=1}^n x_i^2 &= 0^2 + 2^2 + 3^2 + 4^2 &= 29.\\
+\end{align*}
+We then insert the totals into the formulae for $m$ and $b$ to yield our answer.
+\begin{align*}
+m &= \frac{4 (56) - (9)(18)}{4(29) - (9)^2}    &= \frac{62}{35} &\approx 1.7714 \\
+b &= \frac{ (29)(18) - (9)(56) }{4(29) - (9)^2} &= \frac{18}{35} &\approx 0.5143
+\end{align*}
+
+\item
+In lecture, we derived the normal equation.
+Let the design matrix be the matrix of inputs. We prepend a column of ones to serve as the constant offset, so
+\[
+\mathbf{X} = 
+	\begin{bmatrix} 
+    		1 & 0  \\
+    		1 & 2  \\
+		1 & 3  \\
+    		1 & 4 
+    \end{bmatrix}.
+\]
+The normal equation states that the fit parameters $\thetab$ minimize the sum of the squared error when
+\[
+\Xb^\T \yy - \Xb^\T \Xb \thetab = 0.\\
+\]
+Since  $(\Xb^\T \Xb)$ is invertible, 
+\[
+\thetab = (\Xb^\T \Xb)^{-1} (\Xb^\T \yy).
+\]
+
+We may easily find the matrix $(\Xb^\T \Xb)^{-1}$ with linear algebra.
+
+\begin{align*}
+\Xb^\T \Xb &= \begin{bmatrix} 
+  		1 & 1 & 1 & 1 \\
+		0 & 2 & 3 & 4 \\
+    	      \end{bmatrix}
+	      \begin{bmatrix} 
+    		1 & 0  \\
+    		1 & 2  \\
+		1 & 3  \\
+    		1 & 4 
+    	      \end{bmatrix}
+	      =\begin{bmatrix} 
+    		4 & 9  \\
+    		9 & 29  \\
+    	      \end{bmatrix} \\
+(\Xb^\T \Xb)^{-1} &=  \begin{bmatrix} 
+    		29/35 & -9/35  \\
+    		-9/35 & 4/35 \\
+    	      \end{bmatrix}
+\end{align*}
+
+Then,
+\begin{align*}
+\thetab &= (\Xb^\T \Xb)^{-1} (\Xb^\T \yy) \\
+&= 	\begin{bmatrix} 
+    		29/35 & -9/35  \\
+    		-9/35 & 4/35 \\
+    	\end{bmatrix}
+	\begin{bmatrix} 
+  		1 & 1 & 1 & 1 \\
+		0 & 2 & 3 & 4 \\
+   	\end{bmatrix}
+	\begin{bmatrix} 
+    		1  \\
+    		3  \\
+		6 \\
+    		8
+   	\end{bmatrix} \\
+&= 	\begin{bmatrix} 
+    		29/35 & -9/35  \\
+    		-9/35 & 4/35 \\
+    	\end{bmatrix}
+	\begin{bmatrix} 
+		18\\
+		56
+   	\end{bmatrix} \\
+&=	\begin{bmatrix} 
+		18/35\\
+		62/35
+   	\end{bmatrix}
+\end{align*}
+
+The values of $b$ and $m$ match the ones derived with Cramer's rule.
+
+
+\end{enumerate}
+    \vfill
+\end{solution}
+\newpage
+
+
+
+\end{document}
+
