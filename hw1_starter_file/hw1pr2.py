@@ -54,15 +54,16 @@ if __name__ == '__main__':
 	plt.plot(X, y, 'ro')
 
 
-	# TODO: replace the m_opt and b_opt with the solution you obtained from
+	#  replace the m_opt and b_opt with the solution you obtained from
 	# 		part (a), note that y = mx + b
 	"*** YOUR CODE HERE ***"
-	m_opt = 0
-	b_opt = 0
+	m_opt = 1.7714
+	b_opt = 0.5143
+
 	"*** END YOUR CODE HERE ***"
 
 
-	# TODO: generate 100 points along the line of optimal linear fit.
+	# generate 100 points along the line of optimal linear fit.
 
 	# HINT:
 	#	1) Use np.linspace to get the x-coordinate of 100 points
@@ -75,6 +76,8 @@ if __name__ == '__main__':
 	y_space = []
 	"*** YOUR CODE HERE ***"
 
+	X_space = np.linspace(-1, 5, num=100).reshape(-1, 1)
+	y_space = m_opt * X_space + b_opt
 
 	"*** END YOUR CODE HERE ***"
 
@@ -88,20 +91,19 @@ if __name__ == '__main__':
 
 
 	# =============part d: Optimal linear fit with random data points=================
-
 	# variables to start with
 	mu, sigma, sampleSize = 0, 1, 100
 
-	# TODO: Generate white Gaussian noise
+	#  Generate white Gaussian noise
 	# HINT: Use np.random.normal to generate noise
 
 	noise = []
 	"*** YOUR CODE HERE ***"
-
+	noise = np.random.normal(mu, sigma, sampleSize).reshape(-1, 1)
 
 	"*** END YOUR CODE HERE ***"
 
-	# TODO: generate y-coordinate of the 100 points with noise
+	# generate y-coordinate of the 100 points with noise
 
 	# HINT:
 	#	1) Use X_space created in the part (c) above as the x-coordinates
@@ -109,11 +111,11 @@ if __name__ == '__main__':
 
 	y_space_rand = np.zeros(len(X_space))
 	"*** YOUR CODE HERE ***"
-
+	y_space_rand = y_space + noise
 	"*** END YOUR CODE HERE ***"
 
 
-	# TODO: calculate the new parameters for optimal linear fit using the
+	# calculate the new parameters for optimal linear fit using the
 	#		100 new points generated above
 
 	# HINT:
@@ -127,14 +129,19 @@ if __name__ == '__main__':
 	X_space_stacked = X_space	# need to be replaced following hint 1 and 2
 	W_opt = None
 	"*** YOUR CODE HERE ***"
+	X_space_stacked = np.hstack((np.ones_like(X_space), X_space))
 
-
+	W_opt = np.linalg.solve(
+		X_space_stacked.T.dot( X_space_stacked ),
+		X_space_stacked.T.dot(y_space)
+	)
+	
 	"*** END YOUR CODE HERE ***"
 
 	# get the new m, and new b from W_opt obtained above
 	b_rand_opt, m_rand_opt = W_opt.item(0), W_opt.item(1)
 
-	# TODO: Generate the y-coordinate of 100 points with the new parameters
+	# Generate the y-coordinate of 100 points with the new parameters
 	#		obtained
 
 	# HINT:
@@ -145,6 +152,7 @@ if __name__ == '__main__':
 	y_pred_rand = []
 	"*** YOUR CODE HERE ***"
 
+	y_pred_rand = m_rand_opt * X_space + b_rand_opt
 
 	"*** END YOUR CODE HERE ***"
 
@@ -161,4 +169,4 @@ if __name__ == '__main__':
 	plt.legend((orig_plot, rand_plot), \
 		('original fit', 'fit with noise'), loc = 'best')
 	plt.savefig('hw1pr2d.png', format='png')
-	plt.close()
+	plt.close() 
