@@ -70,12 +70,61 @@ The starter files can be found under the Resource tab on course website. The gra
 		\]
 		Using the chain rule and the result above,
 		\begin{align*}
-			\nabla_{\thetab} &= - \sum_i y^{(i)} \frac{1}{\sigma( \thetab^\T \xx^{(i)})}
+			\nabla_{\thetab} nll(\thetab) &= - \sum_i y^{(i)} \frac{1}{\sigma( \thetab^\T \xx^{(i)})}
 				\sigma'( \thetab^\T \xx^{(i)}) - (1 - y^{(i)}) 
 				\frac{1}{1 - \sigma( \thetab^\T \xx^{(i)})}
 				\sigma'( \thetab^\T \xx^{(i)}) \\
-			&= - \sum_i y^{(i)} [1 - \sigma( \thetab^\T \xx^{(i)})] \xx^{(i)} - (1 - y^{(i)}) \sigma( \thetab^\T \xx^{(i)}) \xx^{(i)}
+			&= - \sum_i y^{(i)} [1 - \sigma( \thetab^\T \xx^{(i)})] \xx^{(i)} - (1 	- y^{(i)}) \sigma( \thetab^\T \xx^{(i)}) \xx^{(i)} \\
+			&= - \sum_i \xx^{(i)}  y^{(i)} - y^{(i)} \sigma( \thetab^\T \xx^{(i)}) \xx^{(i)} - \sigma( \thetab^\T \xx^{(i)}) \xx^{(i)}  + y^{(i)} \sigma( \thetab^\T \xx^{(i)}) \xx^{(i)} \\
+			&= - \sum_i (y^{(i)} - \sigma( \thetab^\T \xx^{(i)})) \xx^{(i)} \\
+			&= - \sum_i (y^{(i)} - \mu^{(i)}) \xx^{(i)} \\
+			&= X^\T (\mub - \yy)
 		\end{align*}
+		where $y^{(i)}$ is the $i^{\text{th}}$ entry in the results column vector, $\mu^{(i)}$ is $\sigma( \thetab^\T \xx^{(i)})$, $X$ is the domain matrix, and $\xx^{(i)}$ is the transpose of the $i^{\text{th}}$ row in the design matrix (corresponding to the $i^{\text{th}}$ data observation).
+
+		\item 
+		The Hessian matrix of the NLL function is the gradient of the gradient in row form, i.e.
+		\[
+			\Hb_{\thetab} = \nabla_{\thetab}( \nabla_{\thetab} nll(\thetab))^\T
+		\]
+		Then, we may expand at continue.
+		\begin{align*}
+			\Hb_{\thetab} &=  \nabla_{\thetab}( X^\T (\mub - \yy) )^\T \\
+			&= \nabla_{\thetab}( X^\T \mub - X^\T \yy) \\
+			&= \nabla_{\thetab}( \mub^\T X - \yy^\T X) \\
+			&= \nabla_{\thetab}( \mub^\T X ) \\
+			&= \nabla_{\thetab}( \sigma( X \thetab)^\T X)
+		\end{align*}
+
+		We now note that $\sigma( X \thetab)^\T X$ is a row vector comprised of 
+		\[
+			[\xx_1 \cdot \sigma(\xx_1 \cdot \thetab), \, ... \, , \,  \xx_m \cdot \\sigma(\xx_1 \cdot \thetab)],
+		\]
+		where $\xx_i$ is the $i^{\text{th}}$ row of the domain matrix. Thus, it may be represented as 
+		\[
+			\sigma( X \thetab)^\T X = X^\T M,
+		\]
+		where M is a diagonal matrix whose entries are the ordered entries of $\sigma(X \thetab)$,
+		\[
+			M = 
+			\begin{bmatrix} 
+				\sigma(\xx_1 \cdot \thetab) & &  \\
+				 & \ddots & \\
+				 &  & \sigma(\xx_m \cdot \thetab)
+			\end{bmatrix}.
+		\]
+		Then,
+		 
+		\begin{align*}
+			\Hb_{\thetab} &= \nabla_{\thetab}( X^\T M )\\
+			&= X^\T (\nabla_{\thetab}M)
+			&= X^\T S X)
+		\end{align*}
+		Where $S = \diag(\mu_1(1 - \mu_1), \, ... \, \mu_m(1 - \mu_m)$).
+
+		Trivially, $\Hb_{\thetab}$ is positive semi-definite because the diagonal entries of $S$, its eigenvalues, are nonnegative since they are the product of outputs of the logistic function and thus reside in $(0, 1)$.
+		
+
 
 
 	\end{enumerate}
@@ -93,6 +142,21 @@ The starter files can be found under the Resource tab on course website. The gra
 	such that $\PP(x; \sigma^2)$ becomes a valid density.
 \end{problem}
 \begin{solution}
+	A valid probability density must integrate to 1 over $\mathbb{R}$.
+	First, let's see what the integral over $\mathbb{R}$ is without a normalization constant. We will find the square of that integral $Z$.
+	\begin{align*}
+		Z^2 &= \int_a^b \int_a^b e^{(\frac{x^2 P y^2}{2 \sigma^2})} \, dx \, dy\\
+		&= \int_0^{2\pi} \int_0^{\infty} r e^{(\frac{-r^2}{2 \sigma^2})} \, dr \, d\theta
+	\end{align*}
+	Let $u = e^{(\frac{-r^2}{2 \sigma^2}})$. Then $\frac{du}{dr} = -\frac{r}{\sigma^2} e^{(\frac{-r^2}{2 \sigma^2})}$.
+	\begin{align*}
+		Z^2 &= \int_0^{2\pi} \int_1^{0} \frac{r u \sigma^2}{r e^{(\frac{-r^2}{2 \sigma^2})}} \, du \, d\theta\\
+		&= \int_0^{2\pi} \int_1^{0} -\sigma^2 \, du \, d\theta\\
+		&= 2 \pi \sigma^2
+	\end{align*}
+
+	Because $Z = \sigma \sqrt{2 \pi}$, the normalization factor is $\frac{1}{Z} = \frac{1}{\sigma \sqrt{2 \pi}}$.
+
 	\vfill
 \end{solution}
 \newpage
@@ -174,6 +238,66 @@ it doesn't, try decreasing the learning rate.
 \end{enumerate}
 \end{problem}
 \begin{solution}
+	\begin{enumerate}[(a)]
+		\item
+		First, we substitute in the Gaussian's distribution and simplify.
+		\begin{align*}
+			&\argmax_{\ww} \sum_{i=1}^N \log \frac{1}{\sigma \sqrt{(2 \pi)}} 
+				e^{(-\frac{(y_i - w_0 + \ww^\T\xx_i)^2}{2\sigma^2})} 
+				+ \sum_{j=1}^D log \frac{1}{\tau \sqrt{2\pi}} 
+				e^{(-\frac{w_j^2}{2 \tau^2})} \\
+			=&\argmax_{\ww} \sum_{i=1}^N \log \frac{1}{\sigma \sqrt{(2 \pi)}} 
+			- \frac{(y_i - w_0 + \ww^\T\xx_i)^2}{2\sigma^2} 
+			+ \sum_{j=1}^D log \frac{1}{\tau \sqrt{2\pi}} 
+			- \frac{w_j^2}{2 \tau^2} \\
+			=&\argmax_{\ww} (N + D) \frac{1}{\sigma \sqrt{(2 \pi)}} 
+			- \sum_{j=1}^N \frac{(y_i - w_0 + \ww^\T\xx_i)^2}{2\sigma^2} 
+			- \sum_{j=1}^D \frac{w_j^2}{2 \tau^2}
+		\end{align*}
+		We now note that $N$, $D$, and $\sigma$ are constants and can be removed from the summation. Then, our expression is
+		\begin{align*}
+			&\argmin_{\ww}
+			 \sum_{j=1}^N \frac{(y_i - w_0 + \ww^\T\xx_i)^2}{2\sigma^2} 
+			+ \sum_{j=1}^D \frac{w_j^2}{2 \tau^2}\\
+			=&\argmin_{\ww}
+			 \sum_{j=1}^D (y_i - w_0 + \ww^\T\xx_i)^2
+			+ \frac{2\sigma^2}{2 \tau^2} \sum_{j=1}^D w_j^2
+		\end{align*}
+		We let $\lambda = \frac{2\sigma^2}{2 \tau^2}$ so the expression becomes
+		\begin{align*}
+			&\argmin_{\ww}
+			 \sum_{j=1}^N (y_i - w_0 + \ww^\T\xx_i)^2
+			+ \lambda \sum_{j=1}^D w_j^2 \\
+			=&\argmin_{\ww}
+			\sum_{j=1}^N (y_i - w_0 + \ww^\T\xx_i)^2
+		   + \lambda ||\ww||_2^2
+		\end{align*}
+		as desired.
+
+		\item
+		To minimize
+		\[
+			f = ||A\xx + b\1 - \yy||_2^2 + ||\Gamma\xx||_2^2,
+		\]
+		we take the gradient with respect to $\xx$ and set it to zero.
+		\begin{align*}
+			\nabla_{\xx} f &= \nabla_{\xx} [ (A\xx - \bb)^\T (A\xx - \bb) 
+			+(\Gamma \xx)^\T (\Gamma \xx)] \\
+			&= \nabla_{\xx} [ (\xx^\T A^\T - \bb^\T) (A\xx - \bb) 
+			+(\xx^\T \Gamma^\T ) (\Gamma \xx) ]\\
+			&= \nabla_{\xx} [ \xx^\T A^\T A \xx - 2\xx^\T A^\T \bb) 
+			+ \bb^\T \bb + \xx^\T \Gamma^\T \Gamma \xx ]\\
+			0 &= 2 A^\T A \xx - 2\T A^\T \bb) 
+			+ 2 \Gamma^\T \Gamma \xx ]\\
+			(A^\T A + \Gamma^\T \Gamma) \xx &= A^\T \bb \\
+			\xx &= (A^\T A + \Gamma^\T \Gamma)^{-1} A^\T \bb \\
+		\end{align*}
+		Let $\Gamma = \sqrt{\lambda} \mathbf{I}$. Then,
+		\[
+			\xx = (A^\T A + \lambda \mathbf{I} )A^\T \bb, \\
+		\]
+		the solution to the minimization.
+	\end{enumerate}
 	\vfill
 \end{solution}
 \newpage

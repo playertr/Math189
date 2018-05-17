@@ -9,7 +9,7 @@ The helper functions are all functions necessary to finish the problem.
 The main driver will use the helper functions you finished to report and print
 out the results you need for the problem.
 
-Before attemping the helper functions, please familiarize with pandas and numpy
+Before attempting the helper functions, please familiarize with pandas and numpy
 libraries. Tutorials can be found online:
 http://pandas.pydata.org/pandas-docs/stable/tutorials.html
 https://docs.scipy.org/doc/numpy-dev/user/quickstart.html
@@ -61,7 +61,9 @@ def linreg(X, y, reg=0.0):
 	"""
 	# TODO: solve for W_opt
 	"*** YOUR CODE HERE ***"
-
+	eye = np.eye(X.shape[1])
+	eye[0,0] = 0 
+	W_opt = np.linalg.solve(X.T @ X + reg * eye, X.T @ y)
 
 	"*** END YOUR CODE HERE ***"
 	return W_opt
@@ -91,6 +93,11 @@ def find_RMSE(W, X, y):
 	"""
 	# TODO: Solve for the root mean-squared error, RMSE
 	"*** YOUR CODE HERE ***"
+	y_pred = predict(W, X)
+	error = y - y_pred
+	m = y_pred.shape[0]
+	mse = np.linalg.norm(error, 2) ** 2 / m
+	RMSE = np.sqrt(mse)
 
 
 	"*** END YOUR CODE HERE ***"
@@ -120,6 +127,12 @@ def RMSE_vs_lambda(X_train, y_train, X_val, y_val):
 	reg_list = []
 	W_list = []
 	"*** YOUR CODE HERE ***"
+	reg_list = np.random.uniform(0, 150.0, 150)
+	reg_list.sort()
+	
+	W_list = [ linreg(X_train, y_train, reg = z) for z in reg_list ]
+
+	RMSE_list = [ find_RMSE(W=weights, X=X_train, y=y_train) for weights in W_list ]
 
 
 	"*** END YOUR CODE HERE ***"
@@ -139,7 +152,8 @@ def RMSE_vs_lambda(X_train, y_train, X_val, y_val):
 
 	# TODO: Find reg_opt, the regularization value that minimizes RMSE
 	"*** YOUR CODE HERE ***"
-
+	opt_lambda_index = np.argmin(RMSE_list)
+	reg_opt = reg_list[opt_lambda_index]
 
 	"*** END YOUR CODE HERE ***"
 	return reg_opt
@@ -330,7 +344,7 @@ if __name__ == '__main__':
 	print('==> Loading data...')
 
 	# Read data
-	df = pd.read_csv('https://math189su18.github.io/data/online_news_popularity.csv', \
+	df = pd.read_csv('online_news_popularity.csv', \
 		sep=', ', engine='python')
 
 	# split the data frame by type: training, validation, and test
@@ -360,13 +374,15 @@ if __name__ == '__main__':
 	y_test = np.log(df[df.type == 'test'].shares).reshape((-1, 1))
 
 
-	# TODO: Stack a column of ones to the feature data, X_train, X_val and X_test
+	# TODONT: Stack a column of ones to the feature data, X_train, X_val and X_test
 
 	# HINT:
 	# 	1) Use np.ones / np.ones_like to create a column of ones
 	#	2) Use np.hstack to stack the column to the matrix
 	"*** YOUR CODE HERE ***"
-
+	X_train = np.hstack((np.ones_like(X_train), X_train))
+	X_val = np.hstack((np.ones_like(X_val), X_val))
+	X_test = np.hstack((np.ones_like(X_test), X_test))
 
 	"*** END YOUR CODE HERE ***"
 
