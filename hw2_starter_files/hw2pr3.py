@@ -132,8 +132,7 @@ def RMSE_vs_lambda(X_train, y_train, X_val, y_val):
 	
 	W_list = [ linreg(X_train, y_train, reg = z) for z in reg_list ]
 
-	RMSE_list = [ find_RMSE(W=weights, X=X_train, y=y_train) for weights in W_list ]
-
+	RMSE_list = [ find_RMSE(W=weights, X=X_val, y=y_val) for weights in W_list ]
 
 	"*** END YOUR CODE HERE ***"
 
@@ -182,6 +181,13 @@ def norm_vs_lambda(X_train, y_train, X_val, y_val):
 	norm_list = []
 	"*** YOUR CODE HERE ***"
 
+	reg_list = np.random.uniform(0, 150.0, 150)
+	reg_list.sort()
+	
+	W_list = [ linreg(X_train, y_train, reg = z) for z in reg_list ]
+
+	norm_list = [ np.linalg.norm(weights, 2) for weights in W_list ]
+
 
 	"*** END YOUR CODE HERE ***"
 
@@ -219,8 +225,12 @@ def linreg_no_bias(X, y, reg=0.0):
 	# Find the numerical solution in part d
 	# TODO: Solve for W_opt, and b_opt
 	"*** YOUR CODE HERE ***"
-
-
+	m = X.shape[0]
+	ones = np.eye(m)
+	Aggregate = X.T @ (np.eye(m) - np.ones(m) / m)
+	W_opt = np.linalg.solve(Aggregate @ X + reg * np.eye(Aggregate.shape[0]), \
+		Aggregate @ y)
+	b_opt = sum((y - X @ W_opt)) / m
 	"*** END YOUR CODE HERE ***"
 
 	# Benchmark report
@@ -263,7 +273,10 @@ def grad_descent(X_train, y_train, X_val, y_val, reg=0.0, lr_W=2.5e-12, \
 	# Please use the variable names: W (weights), W_grad (gradients of W),
 	# b (bias), b_grad (gradients of b)
 	"*** YOUR CODE HERE ***"
-
+	W = np.zeros((n, 1))
+	W_grad = np.ones_like(W)
+	b = 0.
+	b_grad = 1
 
 	"*** END YOUR CODE HERE ***"
 
@@ -291,7 +304,20 @@ def grad_descent(X_train, y_train, X_val, y_val, reg=0.0, lr_W=2.5e-12, \
 		and iter_num < max_iter:
 
 		"*** YOUR CODE HERE ***"
-
+		# calculate norms
+		train_rmse = np.sqrt(np.linalg.norm((X_train @ W).reshape((-1, 1)) \
+			+ b - y_train) ** 2 / m_train)
+		obj_train.append(train_rmse)
+		val_rmse = np.sqrt(np.linalg.norm((X_val @ W).reshape((-1, 1)) \
+			+ b - y_val) ** 2 / m_val)
+		obj_val.append(val_rmse)
+		# calculate gradient
+		W_grad = ((X_train.T @ X_train + reg * np.eye(n)) @ W \
+			+ X_train.T @ (b - y_train)) / m_train
+		b_grad = (sum(X_train @ W) - sum(y_train) + b * m_train) / m_train
+		# update weights and bias
+		W -= lr_W * W_grad
+		b -= lr_b * b_grad
 
 		"*** END YOUR CODE HERE ***"
 
